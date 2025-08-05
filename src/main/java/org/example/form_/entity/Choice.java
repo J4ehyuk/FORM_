@@ -1,19 +1,19 @@
 package org.example.form_.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Choice { // 질문 선택지
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private  Long optionId;
+  private  Long choiceId;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "question_id", nullable = false)
