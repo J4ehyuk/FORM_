@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+
 import java.util.List;
 
 @Entity
@@ -19,12 +20,12 @@ public class Question { // 질문
   @JoinColumn(name = "survey_id", nullable = false)
   private Survey survey;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEXT")
   private String text; // 질문
 
   @Column(nullable = false)
-  private Long order; // 순서
+  private Long sequence; // 순서
 
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Option> options; // 선택지 항목
+  private List<Choice> options; // 선택지 항목
 }
