@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: JIDO_
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/FORM_PROGRAM?createDatabaseIfNotExist=true
+    #url: jdbc:mysql://127.0.0.1:3306/roadmap_db?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root
+    password: 980122
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #password: root1234
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop # 앱 실행시 테이블 생성, 앱 종료시 테이블 삭제
+
+    show-sql: true
+
+    properties:
+      hibernate:
+        format_sql: true
+
+    defer-datasource-initialization: true
+
+  server:
+    port: 8080
+
+#  sql:
+#    init:
+#      mode: always
+#      data-locations: classpath:data.sql # 앱 실행 시, 초기 삽입 데이터
+
+
