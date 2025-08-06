@@ -7,7 +7,7 @@ import java.util.List;
 public record SurveyResponseDto(
         Long surveyId,
         String title,
-        String description,
+        String subTitle,
         List<QuestionResponseDto> questions
 ) {
     public static SurveyResponseDto fromEntity(Survey survey) {
@@ -18,7 +18,7 @@ public record SurveyResponseDto(
         return new SurveyResponseDto(
                 survey.getSurveyId(),
                 survey.getTitle(),
-                survey.getDescription(),
+                survey.getSubTitle(),
                 questions
         );
     }

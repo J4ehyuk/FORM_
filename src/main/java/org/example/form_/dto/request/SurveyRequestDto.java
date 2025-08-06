@@ -4,6 +4,6 @@ import java.util.List;
 
 public record SurveyRequestDto(
         String title,
-        String description,
+        String subTitle,
         List<QuestionRequestDto> questions
 ) {}

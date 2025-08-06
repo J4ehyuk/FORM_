@@ -46,7 +46,7 @@ public class SurveyService {
         // 설문 엔티티 생성
         Survey survey = Survey.builder()
                 .title(dto.title())
-                .description(dto.description())
+                .subTitle(dto.subTitle())
                 .build();
 
         // 질문 및 선택지 추가

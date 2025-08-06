@@ -20,7 +20,7 @@ public class Survey { // 설문 목록
   private String title;
 
   @Column(nullable = false)
-  private String description;
+  private String subTitle;
 
   @Setter
   @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
