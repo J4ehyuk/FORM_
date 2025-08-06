@@ -4,12 +4,19 @@ import org.example.form_.entity.Question;
 
 import java.util.List;
 
-public record QuestionResponseDto(Long questionId, String content, Long sequence) {
+public record QuestionResponseDto(
+        Long questionId, String content, Long sequence, List<ChoiceResponseDto> choices
+) {
     public static QuestionResponseDto fromEntity(Question question) {
+        List<ChoiceResponseDto> choices = question.getOptions().stream()
+                .map(ChoiceResponseDto::fromEntity)
+                .toList();
+
         return new QuestionResponseDto(
                 question.getQuestionId(),
                 question.getText(),
-                question.getSequence()
+                question.getSequence(),
+                choices
         );
     }
 }
