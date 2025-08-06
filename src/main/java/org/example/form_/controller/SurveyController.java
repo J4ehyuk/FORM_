@@ -1,8 +1,11 @@
 package org.example.form_.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.form_.dto.SurveyResponseDto;
+import org.example.form_.dto.request.SurveyRequestDto;
+import org.example.form_.dto.response.SurveyResponseDto;
 import org.example.form_.service.SurveyService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,5 +38,15 @@ public class SurveyController {
     @GetMapping("/{surveyId}")
     public SurveyResponseDto getSurvey(@PathVariable Long surveyId) {
         return surveyService.getSurveyById(surveyId);
+    }
+
+
+    /**
+     * 새로운 설문을 생성합니다.
+     */
+    @PostMapping
+    public ResponseEntity<SurveyResponseDto> createSurvey(@RequestBody SurveyRequestDto dto) {
+        SurveyResponseDto created = surveyService.createSurvey(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }

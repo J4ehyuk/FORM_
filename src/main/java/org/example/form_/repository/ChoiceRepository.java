@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ChoiceRepository extends JpaRepository<Choice, Long> {
     // 특정 Question에 속한 Choice 리스트 조회
-    List<Choice> findByQuestion_QuestionId(Long questionId);
+    List<Choice> findByQuestion_QuestionIdOrderBySequence(Long questionId);
 }

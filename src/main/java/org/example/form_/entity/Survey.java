@@ -19,6 +19,11 @@ public class Survey { // 설문 목록
   @Column(nullable = false)
   private String title;
 
+  @Column(nullable = false)
+  private String description;
+
+  @Setter
   @OneToMany(mappedBy = "survey", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Question> questions; // 질문 목록
+
 }

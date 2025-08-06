@@ -26,6 +26,8 @@ public class Question { // 질문
   @Column(nullable = false)
   private Long sequence; // 순서
 
+  @Setter
   @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Choice> options; // 선택지 항목
+
 }

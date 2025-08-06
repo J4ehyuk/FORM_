@@ -1,4 +1,4 @@
-package org.example.form_.dto;
+package org.example.form_.dto.response;
 
 import org.example.form_.entity.Choice;
 

@@ -1,10 +1,14 @@
 package org.example.form_.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.form_.dto.SurveyResponseDto;
+import org.example.form_.dto.request.SurveyRequestDto;
+import org.example.form_.dto.response.SurveyResponseDto;
+import org.example.form_.entity.Choice;
+import org.example.form_.entity.Question;
 import org.example.form_.entity.Survey;
 import org.example.form_.repository.SurveyRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -35,5 +39,41 @@ public class SurveyService {
         Survey survey = surveyRepository.findById(surveyId)
                 .orElseThrow(() -> new IllegalArgumentException("설문을 찾을 수 없습니다. ID = " + surveyId));
         return SurveyResponseDto.fromEntity(survey);
+    }
+
+    @Transactional
+    public SurveyResponseDto createSurvey(SurveyRequestDto dto) {
+        // 설문 엔티티 생성
+        Survey survey = Survey.builder()
+                .title(dto.title())
+                .description(dto.description())
+                .build();
+
+        // 질문 및 선택지 추가
+        List<Question> questions = dto.questions().stream()
+                .map(qDto -> {
+                    Question question = Question.builder()
+                            .survey(survey)
+                            .text(qDto.text())
+                            .sequence(qDto.sequence())
+                            .build();
+
+                    List<Choice> choices = qDto.options().stream()
+                            .map(cDto -> Choice.builder()
+                                    .question(question)
+                                    .text(cDto.text())
+                                    .sequence(cDto.sequence())
+                                    .build())
+                            .toList();
+
+                    question.setOptions(choices);
+                    return question;
+                }).toList();
+
+        survey.setQuestions(questions);
+
+        // 저장 및 DTO 반환
+        Survey savedSurvey = surveyRepository.save(survey);
+        return SurveyResponseDto.fromEntity(savedSurvey);
     }
 }

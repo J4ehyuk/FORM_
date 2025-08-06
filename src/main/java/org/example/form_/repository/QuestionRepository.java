@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     // 특정 Survey에 속한 Question 리스트 조회
-    List<Question> findBySurvey_SurveyId(Long surveyId);
+    List<Question> findBySurvey_SurveyIdOrderBySequence(Long surveyId);
 }

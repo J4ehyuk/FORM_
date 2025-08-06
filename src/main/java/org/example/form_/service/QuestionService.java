@@ -14,6 +14,6 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
 
     public List<Question> getQuestionsBySurveyId(Long surveyId) {
-        return questionRepository.findBySurvey_SurveyId(surveyId);
+        return questionRepository.findBySurvey_SurveyIdOrderBySequence(surveyId);
     }
 }
