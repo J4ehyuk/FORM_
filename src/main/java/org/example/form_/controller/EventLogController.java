@@ -17,12 +17,14 @@ public class EventLogController {
 
   private final EventLogService eventLogService;
 
+  // 해당 question 이벤트 로그 저장
   @PostMapping
   public ResponseEntity<Void> saveEventLog(@RequestBody EventLogRequestDto dto) {
     eventLogService.saveEventLog(dto);
     return ResponseEntity.ok().build();
   }
 
+  // 해당 question 이벤트 로그 조회
   @GetMapping("/question/{questionId}")
   public ResponseEntity<List<EventLogResponseDto>> getLogs(@PathVariable Long questionId) {
     return ResponseEntity.ok(eventLogService.getLogsByQuestionId(questionId));
