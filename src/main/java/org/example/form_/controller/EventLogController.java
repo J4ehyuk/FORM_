@@ -2,13 +2,13 @@ package org.example.form_.controller;
 
 
 import lombok.RequiredArgsConstructor;
-import org.example.form_.dto.EventLogAddDto;
+import org.example.form_.dto.request.EventLogRequestDto;
+import org.example.form_.dto.response.EventLogResponseDto;
 import org.example.form_.service.EventLogService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,9 +18,14 @@ public class EventLogController {
   private final EventLogService eventLogService;
 
   @PostMapping
-  public ResponseEntity<Void> saveEventLog(@RequestBody EventLogAddDto dto) {
+  public ResponseEntity<Void> saveEventLog(@RequestBody EventLogRequestDto dto) {
     eventLogService.saveEventLog(dto);
     return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/question/{questionId}")
+  public ResponseEntity<List<EventLogResponseDto>> getLogs(@PathVariable Long questionId) {
+    return ResponseEntity.ok(eventLogService.getLogsByQuestionId(questionId));
   }
 
 }
