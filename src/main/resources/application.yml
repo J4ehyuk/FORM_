@@ -25,9 +25,9 @@ spring:
   server:
     port: 8080
 
-#  sql:
-#    init:
-#      mode: always
-#      data-locations: classpath:data.sql # 앱 실행 시, 초기 삽입 데이터
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data.sql # 앱 실행 시, 초기 삽입 데이터
 
 
