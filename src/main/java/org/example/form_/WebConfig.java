@@ -11,7 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
   public void addCorsMappings(CorsRegistry registry) {
     registry.addMapping("/**")
             .allowedOriginPatterns(
-                    "http://localhost:5173"
+                    "http://localhost:5173",
+                    "https://deepdive-survey.vercel.app"
             )
             .allowedMethods("*")
             .allowedHeaders("*")
