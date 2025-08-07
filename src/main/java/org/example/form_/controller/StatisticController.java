@@ -2,6 +2,8 @@ package org.example.form_.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.form_.dto.Statistic.AverageDurationQuestionResponse;
+import org.example.form_.dto.Statistic.DurationQuestionResponse;
 import org.example.form_.dto.response.ClickPerParticipantDto;
 import org.example.form_.dto.Statistic.QuestionDurationResponse;
 import org.example.form_.dto.Statistic.SelectionChangeResponse;
@@ -48,6 +50,29 @@ public class StatisticController {
   public HoverStatsDto getHoverStats(@PathVariable Long questionId) {
     return statisticsService.getHoverStats(questionId);
   }
+
+
+  @GetMapping("/question/{questionId}")
+  public ResponseEntity<AverageDurationQuestionResponse> getAverageTimeForQuestion(@PathVariable Long questionId) {
+    Double ret = statisticsService.calculateAverageDurationForQuestion(questionId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(new AverageDurationQuestionResponse(questionId, ret));
+  }
+
+  @GetMapping("/question/max/{questionId}")
+  public ResponseEntity<DurationQuestionResponse> getMaxTimeForQuestion(@PathVariable Long questionId) {
+    Long ret = statisticsService.calculateMaxDurationForQuestion(questionId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(new DurationQuestionResponse(questionId, ret));
+  }
+
+  @GetMapping("/question/min/{questionId}")
+  public ResponseEntity<DurationQuestionResponse> getMinTimeForQuestion(@PathVariable Long questionId) {
+    Long ret = statisticsService.calculateMinDurationForQuestion(questionId);
+
+    return ResponseEntity.status(HttpStatus.OK).body(new DurationQuestionResponse(questionId, ret));
+  }
+
 
 
 }

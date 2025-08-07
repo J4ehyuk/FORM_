@@ -1,7 +1,9 @@
 package org.example.form_.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.form_.dto.Statistic.SelectionChangeResponse;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,11 +39,84 @@ public class StatisticsService {
             .orElse(0.0);
   }
 
-  // - 선택지별로 클릭수 -> ChoiceCountService 에서 제공
-  // - 선택지별 최소
-  // 설문 id에 해당하는 모든 choice_count 에 대해서, 각 sqeuence별
-  // 선택지별 최대
-  // 선택지별 평균
+  /*
+      특정 질문에 대한 "평균 소요 시간"
+   */
+  public Double calculateAverageDurationForQuestion(Long questionId){
+    // 1. 질문 응답자 계산
+    Long cnt = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
+
+
+    // 2. 스트림을 사용하여 각 로그에서 duration 값 추출 및 목록으로 수집
+    List<EventLog> questionTimeLogs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "question_time");
+
+    List<Long> ret = questionTimeLogs.stream()
+            .map(log -> {
+              try {
+                JsonNode rootNode = objectMapper.readTree(log.getPayLoad());
+                // "question_time" 객체에서 "duration" 값을 찾아 long 타입으로 반환
+                return rootNode.path("question_time").path("duration").asLong();
+              } catch (JsonProcessingException e) {
+                // JSON 파싱 오류 발생 시 0 반환 또는 예외 처리
+                return 0L;
+              }
+            })
+            .collect(Collectors.toList()); // 추출된 duration 값들을 List<Long>으로 모으기
+
+    return calculateTrimmedAverage(ret, 0.1);
+
+  }
+
+
+  /*
+      특정 질문에 대한 "최대 소요 시간"
+   */
+  public Long calculateMaxDurationForQuestion(Long questionId){
+
+    // 스트림을 사용하여 각 로그에서 duration 값 추출 및 목록으로 수집
+    List<EventLog> questionTimeLogs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "question_time");
+
+    List<Long> ret = questionTimeLogs.stream()
+            .map(log -> {
+              try {
+                JsonNode rootNode = objectMapper.readTree(log.getPayLoad());
+                // "question_time" 객체에서 "duration" 값을 찾아 long 타입으로 반환
+                return rootNode.path("question_time").path("duration").asLong();
+              } catch (JsonProcessingException e) {
+                // JSON 파싱 오류 발생 시 0 반환 또는 예외 처리
+                return 0L;
+              }
+            })
+            .collect(Collectors.toList()); // 추출된 duration 값들을 List<Long>으로 모으기
+
+    return Collections.max(ret);
+  }
+
+
+  /*
+    특정 질문에 대한 "최소 소요 시간"
+ */
+  public Long calculateMinDurationForQuestion(Long questionId){
+
+    // 스트림을 사용하여 각 로그에서 duration 값 추출 및 목록으로 수집
+    List<EventLog> questionTimeLogs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "question_time");
+
+    List<Long> ret = questionTimeLogs.stream()
+            .map(log -> {
+              try {
+                JsonNode rootNode = objectMapper.readTree(log.getPayLoad());
+                // "question_time" 객체에서 "duration" 값을 찾아 long 타입으로 반환
+                return rootNode.path("question_time").path("duration").asLong();
+              } catch (JsonProcessingException e) {
+                // JSON 파싱 오류 발생 시 0 반환 또는 예외 처리
+                return 0L;
+              }
+            })
+            .collect(Collectors.toList()); // 추출된 duration 값들을 List<Long>으로 모으기
+
+    return Collections.min(ret);
+  }
+
 
 
 
