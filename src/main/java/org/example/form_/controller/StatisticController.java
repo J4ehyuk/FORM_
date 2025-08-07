@@ -7,6 +7,7 @@ import org.example.form_.dto.Statistic.DurationQuestionResponse;
 import org.example.form_.dto.response.ClickPerParticipantDto;
 import org.example.form_.dto.Statistic.QuestionDurationResponse;
 import org.example.form_.dto.Statistic.SelectionChangeResponse;
+import org.example.form_.dto.response.ClickStatsResponse;
 import org.example.form_.dto.response.IdlePeriodStatsDto;
 import org.example.form_.dto.response.HoverStatsDto;
 import org.example.form_.service.StatisticsService;
@@ -39,10 +40,10 @@ public class StatisticController {
     return statisticsService.getIdlePeriodStats(questionId);
   }
 
-  // 평균 클릭 수
-  @GetMapping("/statistic/click-per-participant/{questionId}")
-  public ResponseEntity<ClickPerParticipantDto> getClickPerParticipant(@PathVariable Long questionId) {
-    return ResponseEntity.ok(statisticsService.getClickPerParticipant(questionId));
+  // 옵션별 평균 클릭 수 통계
+  @GetMapping("/click-per-option/{questionId}")
+  public ClickStatsResponse getClickPerOptionStats(@PathVariable Long questionId) {
+    return statisticsService.getOptionClickStats(questionId);
   }
 
   // 호버 시간 평균 최대 최소
