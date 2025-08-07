@@ -5,17 +5,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.form_.dto.Statistic.SelectionChangeResponse;
-import org.example.form_.dto.response.IdlePeriodStatsDto;
+import org.example.form_.dto.response.*;
 import org.example.form_.entity.EventLog;
 import org.example.form_.repository.EventLogRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +47,57 @@ public class StatisticsService {
   // 항목 아이디를 매개변수로 받아옴
   public SelectionChangeResponse getChangeResponse(@PathVariable Long questionId) {
     Long count = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "selection_change");
+    long participantCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
 
-    return SelectionChangeResponse.fromEntity(questionId, count);
+    double result = (participantCount == 0)
+            ? 0.0
+            : (double) count / participantCount;
+
+    return SelectionChangeResponse.fromEntity(questionId, result);
+  }
+
+  public HoverStatsDto getHoverStats(Long questionId) {
+    List<EventLog> logs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "hover");
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    // 옵션별 hover duration 모음: Map<optionId, List<duration>>
+    Map<String, List<Long>> optionDurationMap = new HashMap<>();
+
+    for (EventLog log : logs) {
+      try {
+        Map<String, Object> payloadMap = objectMapper.readValue(
+                log.getPayLoad(), new TypeReference<>() {});
+        Map<String, Object> hoverMap = (Map<String, Object>) payloadMap.get("hover");
+        if (hoverMap == null) continue;
+
+        String optionId = hoverMap.get("optionId").toString();
+        Object durationObj = hoverMap.get("duration");
+        if (optionId == null || durationObj == null) continue;
+
+        Long duration = Long.valueOf(durationObj.toString());
+
+        optionDurationMap.computeIfAbsent(optionId, k -> new ArrayList<>()).add(duration);
+
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    List<OptionHoverStats> optionStats = optionDurationMap.entrySet().stream()
+            .map(entry -> {
+              String optionId = entry.getKey();
+              List<Long> durations = entry.getValue();
+
+              Long min = Collections.min(durations);
+              Long max = Collections.max(durations);
+              Double avg = durations.stream().mapToLong(Long::longValue).average().orElse(0.0);
+              Double trimmed = calculateTrimmedAverage(durations, 0.1);
+
+              return new OptionHoverStats(optionId, min, max, avg, trimmed);
+            })
+            .toList();
+
+    return new HoverStatsDto(questionId, optionStats);
   }
 
   public IdlePeriodStatsDto getIdlePeriodStats(Long questionId) {
@@ -105,6 +150,22 @@ public class StatisticsService {
             .maxDuration(max)
             .avgDuration(avg)
             .trimmedAverageDuration(tAvg)
+            .build();
+  }
+
+  public ClickPerParticipantDto getClickPerParticipant(Long questionId) {
+    long clickCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "click");
+    long participantCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
+
+    double result = (participantCount == 0)
+            ? 0.0
+            : (double) clickCount / participantCount;
+
+    return ClickPerParticipantDto.builder()
+            .questionId(questionId)
+            .clickCount(clickCount)
+            .participantCount(participantCount)
+            .clickPerParticipant(result)
             .build();
   }
 
