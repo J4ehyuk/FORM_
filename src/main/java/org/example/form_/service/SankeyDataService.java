@@ -1,5 +1,6 @@
 package org.example.form_.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +27,15 @@ public class SankeyDataService {
             if (!"selection_change".equals(log.getEventType())) continue;
 
             try {
-                JsonNode payload = objectMapper.readTree(log.getPayLoad());
+                Map<String, Object> outer = objectMapper.readValue(log.getPayLoad(), new TypeReference<>() {});
+                Map<String, Object> selectionChange = (Map<String, Object>) outer.get("selection_change");
 
-                String from = payload.path("from").asText(null);
-                String to = payload.path("to").asText(null);
+                if (selectionChange == null) continue;
 
-                // null이거나 공백이면 제외
-                if (from == null || from.isBlank() || to == null || to.isBlank()) continue;
+                String from = (String) selectionChange.get("from");
+                String to = (String) selectionChange.get("to");
+
+                if (from == null || to == null) continue;
 
                 String fromWithDot = from + ".";
 
