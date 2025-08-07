@@ -12,7 +12,7 @@ import java.util.List;
 public class ChoiceService {
 
     private final ChoiceRepository choiceRepository;
-
+    
     public List<Choice> getChoicesByQuestionId(Long questionId) {
         return choiceRepository.findByQuestion_QuestionIdOrderBySequence(questionId);
     }

@@ -1,11 +1,11 @@
 spring:
   application:
-#    name: FORM # 서버
-    name: FORM_TEST
+    name: FORM # 서버
+#    name: FORM_TEST
 
   datasource:
-#    url: jdbc:mysql://localhost:3306/FORM_PROGRAM?createDatabaseIfNotExist=true # 서버
-    url: jdbc:mysql://localhost:3306/FORM_PROGRAM_DEVELOP?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/FORM_PROGRAM?createDatabaseIfNotExist=true # 서버
+#    url: jdbc:mysql://localhost:3306/FORM_PROGRAM_DEVELOP?createDatabaseIfNotExist=true
     username: root
     password: 980122
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -29,5 +29,5 @@ spring:
       data-locations: classpath:data.sql # 앱 실행 시, 초기 삽입 데이터
 
 server:
-  port: 8081
-#  port: 8080 # 서버
+#  port: 8081
+  port: 8080 # 서버
