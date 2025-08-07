@@ -230,21 +230,48 @@ public class StatisticsService {
             .build();
   }
 
-  public ClickPerParticipantDto getClickPerParticipant(Long questionId) {
-    long clickCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "click");
-    long participantCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
+    public ClickStatsResponse getOptionClickStats(Long questionId) {
+        List<EventLog> clickLogs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "click");
+        long participantCount = eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
 
-    double result = (participantCount == 0)
-            ? 0.0
-            : (double) clickCount / participantCount;
+        Map<String, Long> optionClickCount = new HashMap<>();
 
-    return ClickPerParticipantDto.builder()
-            .questionId(questionId)
-            .clickCount(clickCount)
-            .participantCount(participantCount)
-            .clickPerParticipant(result)
-            .build();
-  }
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for (EventLog log : clickLogs) {
+            try {
+                Map<String, Object> payloadMap = objectMapper.readValue(
+                        log.getPayLoad(), new TypeReference<>() {}
+                );
+                Map<String, Object> clickMap = (Map<String, Object>) payloadMap.get("click");
+                if (clickMap == null) continue;
+
+                String optionId = clickMap.get("selectedOptionId").toString();
+                optionClickCount.put(optionId, optionClickCount.getOrDefault(optionId, 0L) + 1);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        List<ClickPerParticipantDto> stats = optionClickCount.entrySet().stream()
+                .map(entry -> {
+                    long clickCnt = entry.getValue();
+                    double avg = participantCount == 0 ? 0.0 : (double) clickCnt / participantCount;
+                    return ClickPerParticipantDto.builder()
+                            .optionId(entry.getKey())
+                            .clickCount(clickCnt)
+                            .participantCount(participantCount)
+                            .clickPerParticipant(avg)
+                            .build();
+                })
+                .toList();
+
+        return ClickStatsResponse.builder()
+                .questionId(questionId)
+                .optionStats(stats)
+                .build();
+    }
 
 
 

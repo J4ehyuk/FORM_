@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ClickPerParticipantDto {
-    private Long questionId;
+    private String optionId;
     private Long clickCount;
     private Long participantCount;
     private Double clickPerParticipant;
