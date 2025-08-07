@@ -60,10 +60,7 @@ public class StatisticsService {
     List<EventLog> logs = eventLogRepository.findByQuestion_QuestionIdAndEventType(questionId, "idle_period");
 
     ObjectMapper objectMapper = new ObjectMapper();
-
-  // "특정 질문"에 대한 "평균 소요 시간" 계산 (절사 평균 값)
-  public long calculateAverageDurationForQuestion(Long questionId) {
-    eventLogRepository.countByQuestion_QuestionIdAndEventType(questionId, "question_time");
+    
     List<Long> durations = logs.stream()
             .map(log -> {
               try {
