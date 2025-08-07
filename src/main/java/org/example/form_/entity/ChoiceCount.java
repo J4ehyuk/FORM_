@@ -10,7 +10,7 @@ public class ChoiceCount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ChoiceCountId;
+    private Long choiceCountId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "choice_id")
