@@ -15,4 +15,6 @@ public interface EventLogRepository extends JpaRepository<EventLog, Long> {
   // 현재 질문 id의, 해당하는 "이벤트 타입" 카운트
   Long countByQuestion_QuestionIdAndEventType(Long questionId, String eventType);
 
+  // 질문 id + 이벤트 명으로 검색
+  List<EventLog> findByQuestion_QuestionIdAndEventType(Long questionId, String eventType);
 }

@@ -4,7 +4,7 @@ package org.example.form_.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.form_.dto.Statistic.QuestionDurationResponse;
 import org.example.form_.dto.Statistic.SelectionChangeResponse;
-import org.example.form_.service.EventLogService;
+import org.example.form_.dto.response.IdlePeriodStatsDto;
 import org.example.form_.service.StatisticsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,11 +28,11 @@ public class StatisticController {
     return ResponseEntity.status(HttpStatus.OK).body(result);
   }
 
-  // 특정 질문의 총 소요 시간
-  @GetMapping("/question_time/{questionId}")
-  public ResponseEntity<QuestionDurationResponse> getQuestionDuration(@PathVariable Long questionId) {
-    // statisticsService를 사용하여 총 소요 시간(ms)을 계산
-    long totalDurationMs = statisticsService.calculateTotalDurationForQuestion(questionId);
+  // 멈춘 시간
+  @GetMapping("/idle-period/{questionId}")
+  public IdlePeriodStatsDto getIdleStats(@PathVariable Long questionId) {
+    return statisticsService.getIdlePeriodStats(questionId);
+  }
 
     // 응답 DTO를 생성
     QuestionDurationResponse response = new QuestionDurationResponse(questionId, totalDurationMs);
